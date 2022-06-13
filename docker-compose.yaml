@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  api:
+    image: "gotodoapi"
+    environment:
+      DB_USER: "root"
+      DB_PASSWORD: "root"
+      DB_NAME: "tododb"
+      DB_HOST: "mysqlsvc"
+      DB_PORT: "3306"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - todo-api-network
+    depends_on:
+      - mysqlsvc
+
+  mysqlsvc:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "tododb"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - todo-api-network
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  todo-api-network:
+    driver: bridge
